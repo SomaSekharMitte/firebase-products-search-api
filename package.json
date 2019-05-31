@@ -1,0 +1,30 @@
+{
+  "name": "walmart-products-search",
+  "version": "1.0.0",
+  "description": "Walmart Products Search API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "author": "SomaSekhar_ITC",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "events": "^3.0.0",
+    "express": "^4.17.0",
+    "firebase-admin": "^8.0.0",
+    "firebase-functions": "^2.3.1",
+    "firebase-functions-test": "^0.1.6",
+    "firebase-tools": "^6.10.0",
+    "gulp": "^4.0.2",
+    "mongoose": "^5.5.7",
+    "mongoose-currency": "^0.2.0",
+    "nodemon": "^1.19.0",
+    "turbo-cli": "^0.32.54",
+    "webpack": "^4.32.2"
+  },
+  "devDependencies": {
+    "morgan": "^1.9.1"
+  }
+}

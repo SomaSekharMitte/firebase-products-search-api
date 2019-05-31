@@ -1,0 +1,8 @@
+{
+    "env": {
+        "MONGO_DB_PW": "",
+        "NODE_ENV": "dev",
+        "MONGO_DEV_URI" : "mongodb+srv://node-app:node-app@my-node-app-gawel.mongodb.net/test?retryWrites=true",
+        "MONGO_PROD_URI" : "mongodb+srv://node-app:node-app@my-node-app-gawel.mongodb.net/test?retryWrites=true"
+    }
+}
