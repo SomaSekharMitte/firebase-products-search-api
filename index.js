@@ -66,12 +66,12 @@ app.use((request, response, next) => {
 });
 
 // Provide valid json response of wrong API call - 404 Status Code
-app.use((request, response, next) => {
-    const err = new Error('Requested resource could not be found');
-    err.status = 404;
-    err.validUrl = 'https://mobile-tha-server-8ba57.firebaseapp.com/walmartproducts/{pageNumber}/{pageSize}';
-    next(err);
-});
+// app.use((request, response, next) => {
+//     const err = new Error('Requested resource could not be found');
+//     err.status = 404;
+//     err.validUrl = 'https://mobile-tha-server-8ba57.firebaseapp.com/walmartproducts/{pageNumber}/{pageSize}';
+//     next(err);
+// });
 
 // Generic error handler
 app.use((error, request, response, next) => {
