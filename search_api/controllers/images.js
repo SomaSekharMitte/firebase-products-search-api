@@ -16,22 +16,21 @@ exports.imageDownload = (request, response, next) => {
     const bucket = admin.storage().bucket();
     const tmpFilePath = path.join(os.tmpdir(), request.params.imageName);
 
-    // maps file extention to MIME types
-    const mimeType = {
-        '.png': 'image/png',
-        '.jpg': 'image/jpeg',
-        '.gif': 'image/gif'
-    };
-
     myBucketFunction(bucket, request.params.imageName, tmpFilePath);
-
-    response.status(200).json({
-        "message": "Image downloaded to path: " + tmpFilePath,
-        "statusCode": 200
-    });
+    var mimetype = 'image/' + path.extname(tmpFilePath).split('.')[1];
+    var img = fs.readFileSync(tmpFilePath);
+    response.writeHead(200, {'Content-Type': mimetype });
+    response.end(img, 'binary');
 
     async function myBucketFunction(bucket, fileName, tmpFilePath) {
-        await bucket.file('images/'+fileName).download({destination: tmpFilePath});
-        console.log('Image downloaded locally to', tmpFilePath);
+        try {
+            await bucket.file('images/'+fileName).download({destination: tmpFilePath});
+            console.log('Image downloaded locally to', tmpFilePath);
+        }  catch (error) {
+            response.send(500).json({
+                "message": "Image" + request.params.imageName + " not found or error loading the image from storage.",
+                "statusCode": 500
+            });
+        };
     }
 }
