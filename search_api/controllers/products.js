@@ -12,14 +12,14 @@ exports.products_get_by_filter_conditions = (request, response, next) => {
     if (pageNumber < 0 || pageNumber == 0) {
         const error = new Error('Invalid page number, should start with 1');
         error.status = 400;
-        error.validUrl = 'http://localhost:3000/walmartproducts/{pageNumber}/{pageSize}';
+        error.validUrl = 'https://mobile-tha-server-8ba57.firebaseapp.com/walmartproducts/{pageNumber}/{pageSize}';
         next(error);
     }
 
     if (!(pageSize >= 1 && pageSize <= 30)) {
         const error = new Error('Invalid page Size, should be between 1 and 30');
         error.status = 400;
-        error.validUrl = 'http://localhost:3000/walmartproducts/{pageNumber}/{pageSize}';
+        error.validUrl = 'https://mobile-tha-server-8ba57.firebaseapp.com/walmartproducts/{pageNumber}/{pageSize}';
         next(error);
     }
 
@@ -68,12 +68,23 @@ exports.products_get_by_filter_conditions = (request, response, next) => {
              {'price' : { '$gte' : queryParams.minPrice, '$lte' : queryParams.maxPrice }});
     }
 
+    var totalProducts;
+
+    Product.find({}).then(docs => {
+        Product.estimatedDocumentCount({},(error, number) => {
+            if (error) {
+                console.log('Some error fetching count of documents: '+ error);
+            } else {
+                totalProducts = JSON.stringify(number);
+            }
+            });
+        });
+
     // Make a call to get all the products matching the criteria
     Product.find(filters,{},query)
     .select()
     .exec()
     .then(productDocs => {
-        const totalPrducts = productDocs.length; 
         // Customize the response to be shown up in the JSON response
         const docResponse = productDocs.map(doc => {
             const priceVal = doc.price.toFixed(2);
@@ -91,7 +102,7 @@ exports.products_get_by_filter_conditions = (request, response, next) => {
         });
         response.status(200).json({
             products: docResponse,
-            totalProducts: totalPrducts,
+            totalProducts: parseInt(totalProducts),
             pageNumber: Number(request.params.pageNumber),
             pageSize: Number(request.params.pageSize),
             statusCode: 200
@@ -99,7 +110,18 @@ exports.products_get_by_filter_conditions = (request, response, next) => {
     }).catch(err => {
         const error = new Error(err);
         error.status = 500;
-        error.validUrl = 'http://localhost:3000/walmartproducts/{pageNumber}/{pageSize}';
+        error.validUrl = 'https://mobile-tha-server-8ba57.firebaseapp.com/walmartproducts/{pageNumber}/{pageSize}';
         next(error);
     });
+
+    async function totalRecordsCount (Product) {
+        var totalProducts;
+        await Product.find({}).then(docs => {
+            Product.countDocuments({}).then(number => {
+                totalProducts = JSON.stringify(number);
+            });
+        })
+
+        return totalProducts;
+    }
 }
