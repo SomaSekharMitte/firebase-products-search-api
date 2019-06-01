@@ -41,22 +41,29 @@ exports.products_get_by_filter_conditions = (request, response, next) => {
     if (queryParams.inStock != undefined) {
         filters = Object.assign(filters, {'inStock' : queryParams.inStock});
     }
-    if (queryParams.minReviewRating != null) {
-        filters = Object.assign(filters, 
-            {'reviewRating' : { '$gte' : queryParams.minReviewRating }});
-    }
-    if (queryParams.maxReviewRating != null) {
-        filters = Object.assign(filters, 
-            {'reviewRating' : { '$lte' : queryParams.maxReviewRating }});
-    }
-    if (queryParams.minReviewCount != null) {
+    // ReviewCount filtering
+    if (queryParams.minReviewCount > 0 && queryParams.maxReviewCount == undefined) {
         filters = Object.assign(filters,
             {'reviewCount' : { '$gte' : queryParams.minReviewCount }});
-    }
-    if (queryParams.maxReviewCount != null) {
+    } else if (queryParams.maxReviewCount > 0 && queryParams.minReviewCount == undefined) {
         filters = Object.assign(filters, 
             {'reviewCount' : { '$lte' : queryParams.maxReviewCount }});
+    } else if (queryParams.maxReviewCount > 0 && queryParams.minReviewCount > 0) {
+         filters = Object.assign(filters, 
+             {'reviewCount' : { '$gte' : queryParams.minReviewCount, '$lte' : queryParams.maxReviewCount }});
     }
+    // ReviewRating filtering
+    if (queryParams.minReviewRating > 0 && queryParams.maxReviewRating == undefined) {
+        filters = Object.assign(filters,
+            {'reviewRating' : { '$gte' : queryParams.minReviewRating }});
+    } else if (queryParams.maxReviewRating > 0 && queryParams.minReviewRating == undefined) {
+        filters = Object.assign(filters, 
+            {'reviewRating' : { '$lte' : queryParams.maxReviewRating }});
+    } else if (queryParams.maxReviewRating > 0 && queryParams.minReviewRating > 0) {
+         filters = Object.assign(filters, 
+             {'reviewRating' : { '$gte' : queryParams.minReviewRating, '$lte' : queryParams.maxReviewRating }});
+    }
+    // Price filtering
     if (queryParams.minPrice > 0 && queryParams.maxPrice == undefined) {
         filters = Object.assign(filters,
             {'price' : { '$gte' : queryParams.minPrice }});
@@ -70,15 +77,14 @@ exports.products_get_by_filter_conditions = (request, response, next) => {
 
     var totalProducts;
 
-    Product.find({}).then(docs => {
-        Product.estimatedDocumentCount({},(error, number) => {
-            if (error) {
-                console.log('Some error fetching count of documents: '+ error);
-            } else {
-                totalProducts = JSON.stringify(number);
-            }
-            });
-        });
+    Product.countDocuments().then((error, count) => {
+        if (error) {
+            totalProducts = JSON.stringify(error);
+            console.log('Error occurred at records count fetch: ' + totalProducts);
+        } else {
+            totalProducts = JSON.stringify(count);
+        }
+    });
 
     // Make a call to get all the products matching the criteria
     Product.find(filters,{},query)
