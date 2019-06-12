@@ -19,14 +19,18 @@ exports.imageDownload = (request, response, next) => {
     myBucketFunction(bucket, request.params.imageName, tmpFilePath);
     var mimetype = 'image/' + path.extname(tmpFilePath).split('.')[1];
     var img = fs.readFileSync(tmpFilePath);
-    response.writeHead(200, {'Content-Type': mimetype });
+    response.writeHead(200, {
+        'Content-Type': mimetype
+    });
     response.end(img, 'binary');
 
     async function myBucketFunction(bucket, fileName, tmpFilePath) {
         try {
-            await bucket.file('images/'+fileName).download({destination: tmpFilePath});
+            await bucket.file('images/' + fileName).download({
+                destination: tmpFilePath
+            });
             console.log('Image downloaded locally to', tmpFilePath);
-        }  catch (error) {
+        } catch (error) {
             response.send(500).json({
                 "message": "Image" + request.params.imageName + " not found or error loading the image from storage.",
                 "statusCode": 500

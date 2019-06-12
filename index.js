@@ -41,14 +41,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(morgan('dev'));
 
-// Call products controller
-app.get('/walmartproducts/:pageNumber/:pageSize', productSearchController.products_get_by_filter_conditions);
-
-// Call image controller
-images.get("/images/:imageName", imagesController.imageDownload);
-
-mongoose.Promise = global.Promise;
-
 // Set appropriate Access contols for the API
 app.use((request, response, next) => {
     response.header('Access-Control-Allow-Origin', '*');
@@ -64,6 +56,17 @@ app.use((request, response, next) => {
     }
     next();
 });
+
+// Call products controller
+app.get('/walmartproducts/:pageNumber/:pageSize', productSearchController.products_get_by_filter_conditions);
+
+// Call products controller
+app.get('/walmartproducts/:productId', productSearchController.products_get_by_productid);
+
+// Call image controller
+images.get("/images/:imageName", imagesController.imageDownload);
+
+mongoose.Promise = global.Promise;
 
 // Provide valid json response of wrong API call - 404 Status Code
 app.use((request, response, next) => {
