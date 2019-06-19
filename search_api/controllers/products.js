@@ -31,6 +31,7 @@ exports.products_get_by_filter_conditions = (request, response, next) => {
     }));
 
     var filters = {};
+    var sortingFilter;
 
     // Set skip and limit for server side pagination
     query.skip = pageSize * (pageNumber - 1);
@@ -120,6 +121,33 @@ exports.products_get_by_filter_conditions = (request, response, next) => {
         });
     }
 
+    if (queryParams.sort != undefined && queryParams.sort.length != null) {
+        // Sorting option
+        let [column, order] = queryParams.sort.split(':');
+        if ( column != undefined && column.length != null) {
+            if (column == 'price') {
+                if (order == 'desc')
+                    sortingFilter = { 'price' : -1 };
+                else
+                    sortingFilter = { 'price' : 1 };
+
+            } else if (column == 'reviewRating') {
+                if (order == 'desc')
+                    sortingFilter = { 'reviewRating' : -1 };
+                else
+                    sortingFilter = { 'reviewRating' : 1 };
+
+            } else if (column == 'reviewCount') {
+                if (order == 'desc')
+                    sortingFilter = { 'reviewCount' : -1 };
+                else
+                    sortingFilter = { 'reviewCount' : 1 };
+            }
+        }
+    }
+
+    
+
     var totalProducts;
 
     Product.countDocuments().then((error, count) => {
@@ -133,6 +161,7 @@ exports.products_get_by_filter_conditions = (request, response, next) => {
 
     // Make a call to get all the products matching the criteria
     Product.find(filters, {}, query)
+        .sort(sortingFilter)
         .select()
         .exec()
         .then(productDocs => {
@@ -197,5 +226,4 @@ exports.products_get_by_productid = (request, response) => {
             statusCode: 200
         });
     });
-   
 }
