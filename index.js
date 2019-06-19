@@ -54,13 +54,13 @@ app.use((request, response, next) => {
             }
         });
     }
-    next();
+    next(); 
 });
 
 // Call products controller
 app.get('/walmartproducts/:pageNumber/:pageSize', productSearchController.products_get_by_filter_conditions);
 
-// Call products controller
+// Call product by Id controller method
 app.get('/walmartproducts/:productId', productSearchController.products_get_by_productid);
 
 // Call image controller
