@@ -1,0 +1,5 @@
+{
+    "database_url" : "mongodb+srv://node-app:node-app@my-node-app-gawel.mongodb.net/test?retryWrites=true",
+    "secret" : "ilovenodejs",
+    "env" : "dev"
+}

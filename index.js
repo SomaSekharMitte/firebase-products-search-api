@@ -19,7 +19,9 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const productSearchController = require('./search_api/controllers/products');
+const userSearchController = require('./search_api/controllers/users');
 const imagesController = require('./search_api/controllers/images');
+const config = require('./config.json');
 
 // Load the right environment mongodb uri for the connection
 let url = (process.env.NODE_ENV == "dev") ? process.env.MONGO_DEV_URI : process.env.MONGO_PROD_URI;
@@ -28,7 +30,7 @@ let url = (process.env.NODE_ENV == "dev") ? process.env.MONGO_DEV_URI : process.
 admin.initializeApp();
 
 // mongoDB connection
-mongoose.connect("mongodb+srv://node-app:node-app@my-node-app-gawel.mongodb.net/test?retryWrites=true",{ useNewUrlParser: true}, (err) => {
+mongoose.connect(config.database_url,{ useNewUrlParser: true}, (err) => {
     if (err) {
         console.log('Could Not Connect To MongoDb', err);
     } else {
@@ -62,6 +64,9 @@ app.get('/walmartproducts/:pageNumber/:pageSize', productSearchController.produc
 
 // Call product by Id controller method
 app.get('/walmartproducts/:productId', productSearchController.products_get_by_productid);
+
+// User authenticaion for JWT
+app.post('/walmartproducts/authenticate',userSearchController.users_get_by_name_password);
 
 // Call image controller
 images.get("/images/:imageName", imagesController.imageDownload);

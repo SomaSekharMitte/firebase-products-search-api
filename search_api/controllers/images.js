@@ -8,21 +8,41 @@ const imageConfig = require("../../imagesConfig.json");
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
+const authenticationService = require('../services/authentication');
 
 admin.initializeApp(imageConfig, "images");
 
 exports.imageDownload = (request, response, next) => {
 
-    const bucket = admin.storage().bucket();
-    const tmpFilePath = path.join(os.tmpdir(), request.params.imageName);
+    var token = request.headers['x-access-token'];
 
-    myBucketFunction(bucket, request.params.imageName, tmpFilePath);
-    var mimetype = 'image/' + path.extname(tmpFilePath).split('.')[1];
-    var img = fs.readFileSync(tmpFilePath);
-    response.writeHead(200, {
-        'Content-Type': mimetype
-    });
-    response.end(img, 'binary');
+    if (!token) {
+        response.status(403).json({
+            success: false,
+            message: 'No access as token not provided. Generate token using /walmartproducts/authenticate API call'
+        });
+    } else {
+
+        request.token = token;
+        authenticationService
+            .validate_token(request, response, next)
+            .then()
+            .catch(err => {
+                console.log('Something went wrong during authentication. Please try later.');
+        });
+
+        const bucket = admin.storage().bucket();
+        const tmpFilePath = path.join(os.tmpdir(), request.params.imageName);
+
+        myBucketFunction(bucket, request.params.imageName, tmpFilePath);
+        var mimetype = 'image/' + path.extname(tmpFilePath).split('.')[1];
+        var img = fs.readFileSync(tmpFilePath);
+        response.writeHead(200, {
+            'Content-Type': mimetype
+        });
+        response.end(img, 'binary');
+
+    }
 
     async function myBucketFunction(bucket, fileName, tmpFilePath) {
         try {

@@ -2,8 +2,33 @@
  * Products Controller for performing all Products related transactions 
  */
 const Product = require('../model/product');
+const authenticationService = require('../services/authentication');
 
-exports.products_get_by_filter_conditions = (request, response, next) => {
+module.exports = {
+    products_get_by_filter_conditions,
+    products_get_by_productid
+
+};
+
+async function products_get_by_filter_conditions  (request, response, next) {
+
+    var token = request.headers['x-access-token'];
+
+    if (!token) {
+        response.status(403).json({
+            success: false,
+            message: 'No access as token not provided. Generate token using /walmartproducts/authenticate API call'
+        });
+    } else {
+
+        request.token = token;
+        authenticationService
+            .validate_token(request, response, next)
+            .then()
+            .catch(err => {
+                console.log('Something went wrong during authentication. Please try later.');
+        });
+    }
 
     var pageNumber = request.params.pageNumber;
     var pageSize = request.params.pageSize;
@@ -195,7 +220,26 @@ exports.products_get_by_filter_conditions = (request, response, next) => {
         });
 }
 
-exports.products_get_by_productid = (request, response) => {
+async function products_get_by_productid  (request, response, next) {
+
+    var token = request.headers['x-access-token'];
+
+    if (!token) {
+        response.status(403).json({
+            success: false,
+            message: 'No access as token not provided. Generate token using /walmartproducts/authenticate API call'
+        });
+    } else {
+
+        request.token = token;
+        authenticationService
+            .validate_token(request, response, next)
+            .then()
+            .catch(err => {
+                console.log('Something went wrong during authentication. Please try later.');
+        });
+    }
+
     var productId = request.params.productId;
 
     Product.find({ productId : productId }, null, null)
