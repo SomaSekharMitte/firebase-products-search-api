@@ -22,7 +22,7 @@
     "firebase-tools": "^6.10.0",
     "gulp": "^4.0.2",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.5.7",
+    "mongoose": "^5.7.5",
     "mongoose-currency": "^0.2.0",
     "nodemon": "^1.19.0",
     "turbo-cli": "^0.32.54",
