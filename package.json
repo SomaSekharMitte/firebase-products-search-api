@@ -26,7 +26,7 @@
     "mongoose-currency": "^0.2.0",
     "nodemon": "^1.19.0",
     "turbo-cli": "^0.32.54",
-    "webpack": "^4.32.2"
+    "webpack": "^5.75.0"
   },
   "devDependencies": {
     "morgan": "^1.9.1"
